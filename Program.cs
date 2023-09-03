@@ -38,7 +38,7 @@ public static class Program
         public static IEnumerable<Example> Examples =>
             new List<Example>
             {
-                new("Migrate photos from Unix to Windows", new CommandLineOptions("library.db", @"/home/joe/photos", @"P:\", false, true, false)),
+                new("Migrate photos from Unix to Windows", new CommandLineOptions("library.db", @"/home/joe/photos/", @"P:\", false, true, false)),
                 new("Migrate photos from Windows to Unix", new CommandLineOptions("library.db", @"P:\", @"/home/joe/photos/", true, false, false)),
                 new("Migrate photos to another directory", new CommandLineOptions("library.db", @"C:\Users\Joe\Pictures\", @"P:\", false, false, false)),
             };
@@ -172,10 +172,17 @@ public static class Program
 
     public static void Main(string[] args)
     {
-        var parser = new Parser(with => with.HelpWriter = null);
-        var parserResult = parser.ParseArguments<CommandLineOptions>(args);
-        parserResult
-            .WithParsed(RunProgram)
-            .WithNotParsed(err => DisplayHelp(parserResult, err));
+        try
+        {
+            var parser = new Parser(with => with.HelpWriter = null);
+            var parserResult = parser.ParseArguments<CommandLineOptions>(args);
+            parserResult
+                .WithParsed(RunProgram)
+                .WithNotParsed(err => DisplayHelp(parserResult, err));
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine(e.Message);
+        }
     }
 }
